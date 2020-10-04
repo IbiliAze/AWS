@@ -1,0 +1,94 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "MyNewTemp EC2 Description",
+  "Outputs": {
+    "InstanceAZ": {
+      "Description": "MyNewTemp AZ",
+      "Value": {
+        "Fn::GetAtt": [
+          "MyNewTemp",
+          "AvailabilityZone"
+        ]
+      }
+    },
+    "InstanceID": {
+      "Description": "MyNewTemp ID",
+      "Value": {
+        "Ref": "MyNewTemp"
+      }
+    },
+    "InstancePublicIp": {
+      "Description": "MyNewTemp public IP Address",
+      "Value": {
+        "Fn::GetAtt": [
+          "MyNewTemp",
+          "PublicIp"
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "AllowedValues": [
+        "t2.micro",
+        "t2.nano"
+      ],
+      "Default": "t2.micro",
+      "Description": "EC2 Instance Type",
+      "Type": "String"
+    },
+    "KeyName": {
+      "ConstraintDescription": "Must be the name of an existing SSH Key Pair",
+      "Description": "SSH Key Pair",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    }
+  },
+  "Resources": {
+    "MyNewTemp": {
+      "Properties": {
+        "ImageId": "ami-09d95fab7fff3776c",
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "MyNewTemp CloudFormation Template"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash",
+                "yum update -y",
+                "yum install httpd",
+                "cd /var/www/html",
+                "echo hello > index.html",
+                "chkconfig httpd on",
+                "service http start"
+              ]
+            ]
+          }
+        }
+      },
+      "Type": "AWS::EC2::Instance"
+    },
+    "MyNewTempSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Enable SSH via TCP port 22",
+        "SecurityGroupIngress": {
+          "CidrIp": "0.0.0.0/0",
+          "FromPort": "22",
+          "IpProtocol": "tcp",
+          "ToPort": "22"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    }
+  }
+}

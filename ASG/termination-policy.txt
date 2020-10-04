@@ -1,0 +1,11 @@
+DEFAULT Policy
+
+1). Pick an AZ with the most instances and atleast 1 instance not protected from scale-in
+
+2). One with Mixed On-Demand & Spot remains, the non-mix is terminated
+
+3). Instance with the oldest launch template
+
+4). Instance with the oldest launch configuration
+
+5). Random (Closest Billing Hour)

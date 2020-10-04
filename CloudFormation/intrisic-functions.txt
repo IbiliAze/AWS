@@ -1,0 +1,11 @@
+Fn::Ref > reference to parameters, resources
+Fn::GetAtt > get other information attached to the resources, !GetAtt MyIns.AvailabilityZone
+Fn::FindInMap > for mappings, !FindInMap [ MapName, TopKey, SecondKey ]
+Fn::ImportValue > import from exported values
+Fn::Join > !Join [ ":", [ a, b, c ] ] > a:b:c
+Fn::Sub > check below
+  !Sub
+    - www.${Domain}
+    - { Domain: !Ref RootDomainName }
+ 
+Conditions Fn::(If, Not, Equals, Not, Or)

@@ -1,0 +1,442 @@
+1). To get notified when a CodeCommit branch is deleted, use CodeCommit Notification triggers, CloudWatch Events can't do that
+
+
+
+
+
+2). Red Hat does not support Docker
+
+
+
+
+
+3). To interract with SNS with your own custom app, you have to use the AWS SDK
+
+
+
+
+
+4). Health checks are already a feature of the ELB
+
+
+
+
+
+5). Data Pipeline is used to securely transfer data between different serivces with the use of EMR Clusters (EMR for betwen regions)
+
+
+
+
+
+6). Data Pipeline can be used on-premise
+
+
+
+
+
+7). Users can override the default build spec file name such as buildspec_test.yml, which can be done by AWS CLI.
+
+
+
+
+
+8). The source code can be combined along with the build spec file
+
+
+
+
+
+9). ASG Instance Standby Mode states that the instances will be deregistered from the ELB, increase the load on other instances (Troubleshooting)
+
+
+
+
+
+10). IAM users is not a good security practice
+
+
+
+
+
+11). Nested CloudFormation Stacks are considered agile
+
+
+
+
+
+12). EBs manages an SQS queue and running daemon processes to poll the queue when workflows take too long to complete
+
+
+
+
+
+13). CodePipeline Deploy Providers: AppConfig, CF, CD, EBs, OpsWorks, Service Catalog, Skills Kit, ECS, S3
+
+
+
+
+
+14). CodePipeline Build Providers: CB, Jenkins (No ECS)
+
+
+
+
+
+15). CodePipeline Source Providers: CC, ECR, S3, Bitbucket, GitHub
+
+
+
+
+
+16). *Uploading* all files to ElastiCache is not an ideal
+
+
+
+
+
+17). To get the maximum performance out of a Provisioned IOPS SSD Snapshot, read the entire volume once (pre warming)
+
+
+
+
+
+18). Tagging a docker image for ECR AccountID.dkr.ecr.Region.amazonaws.com/ImageRepoName:ImageTag
+
+
+
+
+
+19). You don't need to Docker Run a container in buildspec.yml when working with ECS / ECR
+
+
+
+
+
+20). OpsWorks requires a traditional 3 layer model within a VPC
+
+
+
+
+
+21). OpsWorks Instances: Time-based, Load-Based
+
+
+
+
+
+22). OpsWorks Layer Lifecycles: Setup, Configure, Deploy, Undeploy, Shutdown
+
+
+
+
+
+23). OpsWorks Layer Configure event runs when: an instance enters or leaves the online state, you associate / dissociate an EIP, attach / detach a ELB to the layer
+
+
+
+
+
+24). An instance profile is a container for an IAM role that you can use to pass role information to an EC2 instance when the instance starts
+
+
+
+
+
+25). If you manage your roles from the AWS CLI or the AWS API, you create roles and instance profiles as separate actions
+
+
+
+
+
+26). Use CloudFormation Custom Resource to delete an S3 bucket before deleting, Custom AMIs, New AWS resources not yet available by CloudFormation
+
+
+
+
+
+27). Canary Deployment only consists of 2 states within a given time, liniar is cumulative
+
+
+
+
+
+28).   When using the  OldestLaunchConfiguration  policy Auto Scaling terminates instances that have the oldest launch configuration. This policy is useful when you're updating a group and phasing out the instances from a previous configuration
+
+
+
+
+
+29). Blue/Green = Red/Black
+
+
+
+
+
+30) In Cloudformation you will need to maintain the versions. Elastic Beanstalk can so that automatically for you 
+
+
+
+
+
+31). Red/Black only one environment can receive traffic
+
+
+
+
+
+32). CloudWatch EC2 Metrics do not trace detailed application status such as Tomcat error. This is a use case for customized CloudWatch Logs and an alarm can be created via a Logs Metric Filter
+
+
+
+
+
+33). S3 Analytics is a tool to analyze and visualize the  Amazon S3 storage patterns. Then a suitable storage class can be decided in order to save cost. The reference is in
+
+
+
+
+
+34). When using AWS SDKs and Amazon EC2 roles, you do not have to explicitly retrieve API keys, because the SDK handles retrieving them from the Amazon EC2 MetaData service.
+
+
+
+
+
+35). Direct Connect is not cost-efficient.
+
+
+
+
+
+36). Auto-Healing is a feature of OpsWorks, Not EBs
+
+
+
+
+
+37). ELB and ASG can help to achieve an elastic and self healing system very quickly. If any instance goes wrong and fails the health check in ELB, ASG just stops the instance and launches a new one to replace it
+
+
+
+
+
+38). Cloudwatch Events to trigger the snapshots of EBS Volumes
+
+
+
+
+
+39). Swap URLs are a feauture of EBs
+
+
+
+
+
+40). SQS is not ideal to implement a state machine. It also cannot provide a native visualized status as Step Functions
+
+
+
+
+
+41). Output artifact names must be unique within a pipeline which means the name of WebAppBuild should not be used in both CodeBuild stages
+
+
+
+
+
+42). EBs: Within each package manager, package installation order isn't guaranteed
+
+
+
+
+
+43). CloudFormation bvest practice: Create multiple cloudformation templates for each set of logical resources , one for networking , the other for LAMP stack creation
+
+
+
+
+
+44). API Gateway mapping template can only be configured in Integration Request or Integration Response.
+
+
+
+
+
+45). Kinesis Data Firehose supports a Lambda invocation time of up to 15 minutes, not 30 minutes.
+
+
+
+
+
+46). The DeliveryStreamType property indicates that the delivery stream delivers real-time streaming data to a destination. The delivery stream type has to be set as DirectPut since it allows access to the delivery stream directly or to send records from CloudWatch Logs among other options
+
+
+
+
+
+47). You can configure your environment to apply minor and patch version updates automatically during a configurable weekly maintenance window with Managed Platform Updates. Elastic Beanstalk applies managed updates with no downtime or reduction in capacity, and cancels the update immediately if instances running your application on the new version fail health checks
+
+
+
+
+
+48). In IAM access advisor, view the service-last-accessed information for each OU to help identify which services have been used
+
+
+
+
+
+49). A License Configuration can be created with the license type as vCPU
+
+
+
+
+
+50).  stic Beanstalk is for the deployment of EC2 resources only
+
+
+
+
+
+51). Kinesis streams are currently the only resource supported as a destination for cross-account subscriptions
+
+
+
+
+
+52). You can use intrinsic functions only in specific parts of a template. Currently, you can use intrinsic functions in resource properties, outputs, metadata attributes, and update policy attributes.
+
+
+
+
+
+53). Read replicas spread in different availability zones to ensure that the database still works even if one availability zone has an outage.
+
+
+
+
+
+54). Oracle VirtualBox is not a supported candidate for SMS
+
+
+
+
+
+55). You can prevent stack resources from being unintentionally updated or deleted during a stack update by using a stack policy. A stack policy is a JSON document that defines the update actions that can be performed on designated resources.
+
+
+
+
+
+56). OpsWorks: 1) You can start and stop instances manually or have AWS OpsWorks Stacks automatically scale the number of instances. You can use time-based automatic scaling with any stack; Linux stacks also can use load-based scaling.
+
+2) In addition to using AWS OpsWorks Stacks to create Amazon EC2 instances, you can also register instances with a Linux stack that were created outside of AWS OpsWorks Stacks. This includes Amazon EC2 instances and instances running on your own hardware. However, they must be running one of the supported Linux distributions. You cannot register Amazon EC2 or on-premises Windows instances.
+
+3) A stack's instances can run either Linux or Windows. A stack can have different Linux versions or distributions on different instances, but you cannot mix Linux and Windows instances.
+
+For more information on Opswork instances, please visit the below url
+
+
+
+
+
+57). To avoid overwritten passwords, specify the UsePreviousValue input parameter for the change set in the create-change-set operation to true.
+
+
+
+
+
+58). CloudFront cache cannot be configured with a Lambda
+
+
+
+
+
+59). Amazon Data Lifecycle Manager helps to manage EBS snapshots efficiently. Old snapshots can be deleted to save costs.
+
+
+
+
+
+60). CloudFormation does not support CloudSearch
+
+
+
+
+
+61). Tag repositories in AWS CodeCommit. Create policies in IAM that allow or deny actions on repositories based on the tags associated with repositories.
+
+
+
+
+
+62). To use an external cookbook on an instance, you need a way to install it and manage any dependencies. The preferred approach is to implement a cookbook that supports a dependency manager named Berkshelf. Berkshelf works on Amazon EC2 instances, including AWS OpsWorks Stacks instances, but it is also designed to work with Test Kitchen and Vagrant. 
+
+
+
+
+
+63). se the "iam:ListAccessKeys" API to know when the access keys were created. You can use this information to find which keys are older than six months. Run a batch process to generate the compliance report as per the requirement of the VP of the compliance department
+
+
+
+
+
+64). The optimal usage of a table's provisioned throughput depends on these factors:
+
+The primary key selection.
+The workload patterns on individual items.
+
+
+
+
+
+65). The aws cloudformation validate-template command is designed to check only the syntax of your template.
+
+
+
+
+
+66). To check the operational validity, you need to attempt to create the stack, There is no sandbox or test area for AWS CloudFormation stacks, so you are charged for the resources you create during testing.
+
+
+
+
+
+67). To have a stack install and use custom cookbooks, you must configure the stack to enable custom cookbooks, if it is not already configured. You must then provide the repository URL and any related information such as a password
+
+
+
+
+
+68). Network Load Balancers do not have associated security groups, update the security group in the target EC2 instances.
+
+
+
+
+
+69). Use Amazon Data Lifecycle Manager (Amazon DLM) to automate the creation of snapshots taken to back up your Amazon EBS volumes.. The data is durable because EBS snapshots are stored on the Amazon S3 standard storage class
+
+
+
+
+
+70). Using Amazon CloudWatch alarm actions, you can create alarms that automatically stop, terminate, reboot, or recover your EC2 instances. You can use the stop or terminate actions to help you save money when you no longer need an instance to be running. You can use the reboot and recover actions to automatically reboot those instances or recover them onto new hardware if a system impairment occurs.
+
+
+
+
+
+71). In AWS Console, check the Access Advisor of the IAM policy to see when the permitted services were last accessed. If they were accessed a long time ago, it would be safe to delete the policy.
+
+
+
+
+
+72). QuickSight is a BI service which can generate rich and interactive dashboards. It also has a pay-per-session pricing and is a cost-effective solution
+
+
+
+
+
+73).

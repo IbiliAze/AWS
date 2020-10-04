@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-
+Description: {}
+Outputs:
+  InstanceAZ:
+    Description: {instance_name} AZ
+    Value:
+      'Fn::Join':
+        - 'Fn::GetAtt':
+            - EC2Instance
+            - AvailabilityZone
+  InstanceID:
+    Description: {instance_name} ID
+    Value:
+      Ref: {instance_name}
+
+Parameters:
+  InstanceType:
+    AllowedValues:
+      - t2.micro
+      - t2.nano
+    Default: {instance_type}
+    Description: EC2 Instance Type
+    Type: String
+  KeyName:
+    ConstraintDescription: Must be the name of an existing SSH Key Pair
+    Description: SSH Key Pair
+    Type: 'AWS::EC2::KeyPair::KeyName'
+
+Resources:
+    {instance_name}:
+    Properties:
+      ImageId: {ami}
+      InstanceType:
+        Ref: InstanceType
+      KeyName:
+        Ref: KeyName
+      Tags:
+        - Key: Name
+          Value: {instance_name} CloudFormation Template
+    Type: 'AWS::EC2::Instance'
+    {instance_name}SecurityGroup:
+    Properties:
+      GroupDescription: Enable SSH via TCP port 22
+      SecurityGroupIngress:
+        CidrIp: {security_group_cidr}
+        FromPort: {security_group_source_port}
+        IpProtocol: {security_group_protocol}
+        ToPort: {security_group_dest_port}
+    Type: 'AWS::EC2::SecurityGroup'

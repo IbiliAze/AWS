@@ -1,0 +1,266 @@
+1). Cross-Account Access: IAM Role in the other account, Your account to assume that role, for that you need a permission to assume that role. This is like having the ability to use a role that is in a different account, where you need a two-way trust
+
+
+
+
+2). CloudFront Distributions can't use ELB SSL certificates, they're two different things
+
+
+
+
+3). CloudFront secure SSL connection, change the Viewer Protocol Policy to HTTPS to force HTTPS and reject HTTP
+
+
+
+
+4). Cloudfront Logging: within CloudFront config, to an S3 Bucket
+
+
+
+
+5). CloudFront Signed Cookies: When You want to provide access to multiple restricted files, for example, all of the files for a video in HLS format or all of the files in the subscribers' area of a website. and when You don't want to change your current URLs
+
+
+
+
+6). Pre-sgined URL's are used to restrict access to FILES, NOT for users
+
+
+
+
+7). Direct Connect doesn't traverse the internet
+
+
+
+
+8). LDAPS = LDAP over SSL
+
+
+
+
+9) WAF can be put infront of ALB + CloudFront for EC2 (not RDS)
+
+
+
+
+10). Get logs to WAF before the potential attack: Have an S3 bucket for Logs with Kinesis Firehose
+
+
+
+
+11). GuardDuty analyzes and processes data from AWS CloudTrail event logs, VPC Flow Logs, and DNS logs
+
+
+
+
+12). kms:ViaService is the correct key condition to filter that only EC2 and RDS can use the CMK
+
+
+
+
+13). kms:ValidTo is a condition to determine when the imported key material expires
+
+
+
+
+14). When kms:GrantIsForAWSResource is true, only integrated AWS services can create grants.
+
+
+
+
+15). During key rotation, the data keys that the CMK generated are not rotated, which means it cannot mitigate the effect of a compromised data key.
+
+
+
+
+16). Users do not need to schedule the update for the key anymore since AWS KMS rotates the CMK automatically, when automatic key rotation is enabled
+
+
+
+
+17). You cannot manage key rotation for AWS managed CMKs. AWS KMS automatically rotates AWS managed keys every three years
+
+
+
+
+18). aws kms encrypt is suitable for encrypting a file which is less than 4kb
+
+
+
+
+19). Aws kms decrypt has the below format:
+aws kms decrypt \
+
+    --ciphertext-blob fileb://ExampleEncryptedFile \
+
+    --output text \
+
+    --query Plaintext | base64 --decode > ExamplePlaintextFile
+
+There is no need to add key information. This is different from aws kms encrypt
+
+
+
+
+20). Automatic key rotation is not an option for CMKs with imported key material.
+
+
+
+
+21). Users can manually delete the key material. After that, AWS KMS deletes the key material but does not delete the CMK or metadata.
+
+
+
+
+22). Keys are regional
+
+
+
+
+23). IAM report consists of: 
+
+access_key_1_last_rotated
+
+access_key_1_last_used_service
+
+password_last_changed
+
+
+
+
+24). CloudTrail logs are already encrypted using S3 SSE
+
+
+
+
+25). Amazon Trusted Advisor cannot be used to generate the list of servers that dont meet compliance needs
+
+
+
+
+26). Use the Systems Manager Patch Manager to generate the report and also install the missing patches
+
+
+
+
+27). Open S3 buckets owned by other accounts: Add the option of --acl "bucket-owner-full-control" to aws s3api put-object in order to give permissions to the bucket owner for the objects
+
+
+
+
+28). Normal AWS Shield Service will not help in immediate action against a DDos attack. This can be done via the AWS Shield Advanced Service
+
+
+
+
+29). AWS Config Resource Inventory is not able to provide documents for PCI.
+
+
+
+
+30). AWS Inspector cannot be used to monitor for security related messages
+
+
+
+
+31). Files cannot be exported to AWS Cloudtrail
+
+
+
+
+32). Information needed to create an IdP: App Client ID, App Client Secret, List of scopes
+
+
+
+
+33).  bucket owner can enable other AWS accounts to upload objects. These objects are owned by the accounts that created them. The bucket owner does not own objects that were not created by the bucket owner. Therefore, for the bucket owner to grant access to these objects, the object owner must first grant permission to the bucket owner using an object ACL. The bucket owner can then delegate those permissions via a bucket policy. In this example, the bucket owner delegates permission to users in its own account.
+
+
+
+
+34). Amazon Cognito Identity Pools can be used to enable unauthenticated access to AWS resources
+
+
+
+
+35). AWS AppSync to synchronize data across application clients.
+
+
+
+
+36). You cannot make changes to an existing DHCP options Set.
+
+
+
+
+37). AWS Config service is not used to check the vulnerabilities on servers
+
+
+
+
+38). You have to use SAML to enable single sign on.
+
+
+
+
+39). AWS Organization Service Access Report produces a temporal report of AWS Service Activity
+
+
+
+
+40). S3 is not encrypted by default.
+
+
+
+
+41). GenerateDataKeyWitoutPlaintext API to generate a data key.  This data key is then distributed to the individual components of the distributed system.
+
+
+
+
+42). Encrypt API can encrypt up to 4 kilobytes
+
+
+
+
+43). Decrypt API needs to be used by the individual components processing the data to decrypt the data key
+
+
+
+
+44). Yyou can change the expiration date of a KMS key only by reimporting the same key material and specifying a new expiration date 
+
+
+
+
+45). Amazon Artifact Reports can be used to assess and validate the security and compliance of the AWS infrastructure
+
+
+
+
+45). QuickSight can visualize the logs in near real time.
+
+
+
+
+46). Amazon API Gateway Lambda authorizer (formerly known as a custom authorizer) is a Lambda function that you provide to control access to your API methods. A Lambda authorizer uses bearer token authentication strategies, such as OAuth or SAML. It can also use information described by headers, paths, query strings, stage variables, or context variables request parameters.
+
+
+
+
+47). Lost SSH Keys: Detach the root volume, attach it to another instance as a data volume, modify the authorized_keys file to include the new SSH public key and move the volume back.
+
+
+
+
+48). Elliptic Curve Diffie-Hellman Ephemeral (ECDHE) cipher suites support PFS
+
+
+
+
+49). Origin access identity is used when serving content from Amazon S3.
+
+
+
+
+50).  

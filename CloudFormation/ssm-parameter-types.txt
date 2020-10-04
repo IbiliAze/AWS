@@ -1,0 +1,7 @@
+1). AWS::SSM::Parameter::Name > pass the name of the parameter key as-is, will not fetch the value stored against it, you can use this type to validate that the parameter exists in Parameter Store
+
+2). AWS::SSM::Parameter::Value<String> > value is fetched from Systems Manager with the type defined in the trailing angle brackets <>. For now, you can only use plaintext strings or list of strings.
+
+3). AWS::SSM::Parameter::Value<List<String>>
+
+4). AWS::SSM::Parameter::Value<Any AWS type>

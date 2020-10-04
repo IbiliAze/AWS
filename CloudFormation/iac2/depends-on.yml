@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key-Pair Name
+  InstanceType:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /EC2/InstanceType
+
+Mappings:
+  AWSRegionArch2AMI:
+    us-east-1:
+      HVM64: ami-09d95fab7fff3776c
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref SSHKey
+      ImageId: !FindInMap [AWSRegionArch2AMI, !Ref 'AWS::Region', HVM64]
+      #1st key, AWSRegionArch2AMI is the mapping name
+      #2nd key, !Ref 'AWS::Region' is the region of the resource,
+      #that will be used to query 'us-east-1' in the mappings
+      #3rd key, HVM64 is the final key in the mapping
+      DependsOn: MyDB
+      #This instance should not be create until MyDB resource is created
+      SecurityGroups:
+       - !Ref SSHSecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          echo "hello cloud gurus" > /var/www/html/index.html
+  MyDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '5'
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      EngineVersion: '5.7.22'
+      MasterUsername: ibili
+      MasterUserPassword: cisco12345!
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: MySecurityGroup
+      GroupDescription: My Security Group
+      SecurityGroupIngress:
+       - CidrIp: 0.0.0.0/0
+         FromPort: 22
+         ToPort: 22
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 80
+         ToPort: 80
+         IpProtocol: tcp
+
+

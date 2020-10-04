@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key-Pair Name
+  
+  SecurityGroupDescription:
+    Type: String
+    Description: Description for the Security Group
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+     - t2.nano
+     - t2.micro
+     - t2.small
+    Description: EC2 Instance Type
+
+  InstanceTypeFromSSM:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /EC2/InstanceType
+
+  ImageIdFromSSM:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /EC2/AMI_ID
+    AllowedValues:
+     - /aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2
+     - /EC2/AMI_ID
+
+  EnvironmentType:
+    Type: String
+    Default: Development
+    AllowedValues:
+     - Production
+     - Development
+     - Test
+    Description: Environment Type
+
+  S3BucketParam:
+    Type: String #for lambda
+    Default: aws-devops-ibi
+
+  S3KeyParam:
+    Type: String #for lambda
+    Default: index-py.zip
+
+  S3ObjectVersion:
+    Type: String #for lambda
+    Default: 8JINvCPiE5I3suNItWysET7d5qEdE7Kq
+
+  WelcomeMessage:
+    Type: String
+    Default: "hello"
+
+
+Conditions:
+  CreateIfEnvTypeDev: !Equals [ !Ref EnvironmentType, Development ]
+     
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      HVM64: ami-09d95fab7fff3776c
+
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Condition: CreateIfEnvTypeDev
+    DeletionPolicy: Delete
+    DependsOn: SSHSecurityGroup
+    Properties:
+      AvailabilityZone: us-east-1a
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref SSHKey
+      ImageId: !FindInMap [ RegionMap,  !Ref "AWS::Region", HVM64 ]
+      SecurityGroups:
+       - !Ref SSHSecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub |        
+            #!/bin/bash -xe
+            yum install -y aws-cfn-bootstrap
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -s ${AWS::StackId} -r MyInstance --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackId} --resource SampleWaitCondition --region ${AWS::Region}
+    Metadata:
+      Comment: Install HTTPD Apache
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+          files:
+            "/var/www/html/index.html":
+              content: !Sub |
+                <h1> Hello ${WelcomeMessage} </h1>
+              mode: '000644'
+          commands:
+            hello:
+              command: "echo $(printenv) >> /var/www/html/index.html"
+          services:
+            sysvinit:
+              httpd:
+                enabled: 'true'
+                ensureRunning: 'true'
+
+  SampleWaitCondition:
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT5M
+    Type: AWS::CloudFormation::WaitCondition
+
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref MyInstance
+
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: MySecurityGroup
+      GroupDescription: !Ref SecurityGroupDescription
+      SecurityGroupIngress:
+       - CidrIp: 0.0.0.0/0
+         FromPort: 22
+         ToPort: 22
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 80
+         ToPort: 80
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 443
+         ToPort: 443
+         IpProtocol: tcp
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+         - Effect: Allow
+           Principal:
+             Service:
+              - lambda.amazonaws.com
+           Action:
+            - sts:AssumeRole
+      Path: "/"
+      Policies:
+       - PolicyName: root
+         PolicyDocument:
+           Version: '2012-10-17'
+           Statement:
+            - Effect: Allow
+              Action:
+               - "s3:*"
+              Resource: "*"
+            - Effect: Allow
+              Action:
+               - "logs:CreateLogGroup"
+               - "logs:CreateLogStream"
+               - "logs:PutLogEvents"
+              Resource: "*"
+                   
+  MyLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: "index.handler"
+      Role:
+        Fn::GetAtt:
+          - "LambdaExecutionRole"
+          - "Arn"
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref S3BucketParam
+        S3Key: !Ref S3KeyParam
+        S3ObjectVersion: !Ref S3ObjectVersion
+
+
+Outputs:
+  InstanceId:
+    Value: !Ref MyInstance
+    Description: EC2 Instance ID
+  InstanceAz:
+    Value: !GetAtt MyInstance.AvailabilityZone
+    Description: EC2 AZ
+  SecurityGroupId:
+    Value: !Ref SSHSecurityGroup
+    Description: Security Group ID
+    Export:
+      Name: ExportedSGID
+
