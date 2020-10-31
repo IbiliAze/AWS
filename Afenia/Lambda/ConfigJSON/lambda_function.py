@@ -36,3 +36,4 @@ def convert_to_json(commands_py, file_name):
     s3.upload_file("/tmp/config.json", 'afeniadestination', f"{file_name_clean}")
     
     os.remove("/tmp/config.json")
+

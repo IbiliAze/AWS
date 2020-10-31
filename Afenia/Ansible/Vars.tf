@@ -6,6 +6,9 @@ variable "AWS_REGION" {
 variable "myPublicIp" {
   default = "92.232.147.91/32"
 }
+variable "accountId" {
+  default = "285436582846"
+}
 variable "AMIS" {
   type = map
   default = {
