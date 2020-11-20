@@ -1,0 +1,12 @@
+---
+- name: collect facts
+  hosts: iosxe
+  tasks:
+    - name: system facts
+      ios_command:
+        commands:
+          - conf t
+          - interface loop23
+          - no shut
+      register: output
+

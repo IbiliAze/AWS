@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key-Pair Name
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      InstanceType: t2.micro
+      KeyName: !Ref SSHKey
+      ImageId: ami-09d95fab7fff3776c
+      SecurityGroups:
+       - !Ref SSHSecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            yum update -y aws-cfn-bootstrap #for cfn-init
+            /opt/aws/bin/cfn-init -s ${AWS::StackId} -r MyInstance --region ${AWS::Region}}  #start cfn-init
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackId} --resource SampleWaitCondition --region ${AWS::Region} #$? if the line above works send a goos signal and vice versa, wait condition: if the line above worked refer to SampleWaitCondition, even if it failed
+    Metadata:
+      Comment: Install Apache HTTPD
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+          files:
+            "/var/www/html/index.html":
+              content: |
+                <h1> Hello cloud gurus from cfn-init </h1>
+              mode: '000644'
+          commands:
+            hello:
+              command: "echo 'hello world'"
+          services:
+            sysvinit:
+              httpd:
+                enabled: 'true'
+                ensureRunning: 'true'
+  SampleWaitCondition:
+    CreationPolicy:
+      ResourcesSignal:
+        Timeout: PT1M #1 minute
+    Type: AWS::CloudFormation::WaitCondition
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: MySecurityGroup
+      GroupDescription: My Security Group
+      SecurityGroupIngress:
+       - CidrIp: 0.0.0.0/0
+         FromPort: 22
+         ToPort: 22
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 80
+         ToPort: 80
+         IpProtocol: tcp

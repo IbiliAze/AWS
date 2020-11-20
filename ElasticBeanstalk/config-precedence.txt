@@ -1,0 +1,7 @@
+1). Changes directly to the Environment
+
+2). Saved Configurations
+
+3). .ebextensions
+
+4). Default values

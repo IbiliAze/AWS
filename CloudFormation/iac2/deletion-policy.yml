@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key-Pair Name
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailibilityZone: us-east-1
+      Instance-Type: t2.micro
+      KeyName: !Ref SSHKey
+      ImageId: ami-09d95fab7fff3776c
+      SecurityGroups:
+       - !Ref SSHSecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          echo "hello cloud gurus" > /var/www/html/index.html
+    DeletionPolicy: Snapshot #when the stack is deleted, a final snapshot of myInstance resource will be taken
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: MySecurityGroup
+      GroupDesciption: My Security Group
+      SecurityGroupIngress:
+       - CidrIp: 0.0.0.0/0
+         FromPort: 22
+         ToPort: 22
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 80
+         ToPort: 80
+         IpProtocol: tcp
+    DeletionPolicy: Retain #when stack is deleted, SSHSecurityGroup resource won't be deleted
+

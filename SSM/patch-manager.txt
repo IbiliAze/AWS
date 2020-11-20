@@ -1,0 +1,7 @@
+1). Create a Path Baseline 
+
+2). Create Maintenance Windows
+
+3). Register Targets with Maintenance Windows
+
+4). Register a Run Command with the Maintenace Windows (AWS-RunPatchBaseline)

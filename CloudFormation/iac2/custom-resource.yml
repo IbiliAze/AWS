@@ -1,0 +1,10 @@
+Resources:
+ 
+  CustomResource:
+    Bucket:
+      Type: AWS::S3::Bucket
+    LambdaUsedToCleanUp:
+      Type: Custom::cleanupbucket
+      Properties:
+        ServiceToken: !ImportValue EmptyS3BucketLambda #resource you should've created for this CS
+        BucketName: !Ref Bucket

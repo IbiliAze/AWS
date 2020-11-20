@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key-Pair Name
+  InstanceType:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /EC2/InstanceType
+  ImageId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /EC2/AMI_ID
+  NumberOfInstances:
+    Type: String
+    Default: 2
+
+Resources:
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones:
+        Fn::GetAZs:
+          Ref: "AWS::Region"
+      LaunchConfigurationName:
+        Ref: LaunchConfig
+      DesiredCapacity: !Ref NumberOfInstances
+      MinSize: '1'
+      MaxSize: '3'
+    CreationPolicy:
+      ResourceSignal:
+        Count: !Ref NumberOfInstances
+        Timeout: PT15M
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '1'
+        MaxBatchSize: '1'
+        PauseTime: PT2M
+        WaitOnResourceSignals: 'true'
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: 'true'
+  LaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      SecurityGroups: 
+       - !Ref SSHSecurityGroup
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      UserData: 
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            yum update -y
+            yum install -y httpd
+            systemctl start httpd
+            systemctl enable httpd
+            echo "hello cloud gurus version 3" > /var/www/html/index.html
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackId} --resource AutoScalingGroup --region ${AWS::Region}
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: MySecurityGroup
+      GroupDescription: My Security Group
+      SecurityGroupIngress:
+       - CidrIp: 0.0.0.0/0
+         FromPort: 22
+         ToPort: 22
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 80
+         ToPort: 80
+         IpProtocol: tcp
+
+

@@ -1,0 +1,18 @@
+{
+  "Id": "Policy1593537775388",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1593537772713",
+      "Action": "s3:*",
+      "Effect": "Deny",
+      "Resource": "arn:aws:s3:::policiedbucket-devops-ibi",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      },
+      "Principal": "*"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+       ECS WORKFLOW
+1). Provision an ECS Cluster
+    ECS Cluster will provision an EC2 instance with a spacial ECS AMI
+    Each EC2 instance will contain an ECS Agent (Docker Container)
+    ECS Agent registers the EC2 instance with the ECS Cluster
+
+2). To create a docker image, create a Task Definiton
+    Add a container within the Task Definition, and the image example: httpd:2.4
+
+3). To run the docker image, create a Service
+    Create a service within the cluster
+
+FOR ELB Integration
+
+4). Update the Task Definition to n number of tasks
+
+5). Create an ALB with its SG & dummy Target Group
+    Do not need to attach instances here
+
+6). Add an Inbound rule on ECS Cluster SG to allow all traffic, from all ports, from ALB SG
+
+7). Create a new Service and apply the ALB integration rules
+    Path pattern: /, Evaluation Order: 1, Health Check: /
+    Choose the new Task Definition Revision
+
+8). Delete the old Service
+    Firstly update its desired number of tasks to 0

@@ -1,0 +1,6 @@
+1. Each Kinesis DS Shard has 1MB Maximum capacity
+
+
+
+
+2. 

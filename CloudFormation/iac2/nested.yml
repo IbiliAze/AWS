@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 Key-Pair Name
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailibilityZone: us-east-1
+      Instance-Type: t2.micro
+      KeyName: !Ref SSHKey
+      ImageId: ami-09d95fab7fff3776c
+      SecurityGroups:
+       - !Ref SSHSecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          echo "hello cloud gurus" > /var/www/html/index.html
+  MyStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL:
+      https://s3.amazon.com/cloudformation-templates-us-east-1/LAMP_Signle_Instance.template
+      Parameters:
+        KeyName: !Ref SSHKey
+        DBName: "myDB"
+        DBUser: "user"
+        DBPassword: "cisco12345!"
+        DBRootPasword: "cisco123456!"
+        InstanceType: t2.micro
+        SSHLocation: 0.0.0.0/0
+
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupName: MySecurityGroup
+      GroupDesciption: My Security Group
+      SecurityGroupIngress:
+       - CidrIp: 0.0.0.0/0
+         FromPort: 22
+         ToPort: 22
+         IpProtocol: tcp
+       - CidrIp: 0.0.0.0/0
+         FromPort: 80
+         ToPort: 80
+         IpProtocol: tcp
+
+Outputs:
+  StackRef:
+    Value: !Ref MyStack
+  OutputFromNestedStack:
+    Value: !GetAtt MyStack.Outputs.WebsiteURL
